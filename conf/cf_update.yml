@@ -1,0 +1,18 @@
+- name: conf update
+  hosts: "{{host}}"
+  sudo: no
+  remote_user: tomcat
+  vars: 
+    - path: "{{path}}"
+    - project_name : "{{project_name}}"
+    - targetpath : "{{targetpath}}"
+    - service_type : "{{service_type}}"
+  tasks:
+    - copy: src={{item}} dest={{targetpath}}
+      with_fileglob:
+        - "{{ path }}"
+
+    - name : stop {{service_type}} service
+      shell: /etc/init.d/{{service_type}} stop
+    - name : start {{service_type}} service
+      shell: /etc/init.d/{{service_type}} stop

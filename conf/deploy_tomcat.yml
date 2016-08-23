@@ -1,0 +1,21 @@
+- name: deploy service
+  hosts: "{{host}}"
+  sudo: no
+  remote_user: tomcat
+  vars: 
+    - path: "{{path}}"
+    - project_name : "{{project_name}}"
+    - package : "{{package}}"
+  tasks:
+      - service : name=tomcat state=stopped
+      - name : stop tomcat service 
+        shell: /etc/init.d/tomcat stop
+      - name : delete old package on {{host}} {{path}}/{{project_name}}
+        file : dest={{path}}/{{project_name}} state=absent 
+      - name : delete old package on {{host}} {{path}}/{{project_name}}.war
+        file : dest={{path}}/{{project_name}}.war  state=absent
+      - name : delete tomcat tmp file
+        file : dest=/data/project/{{project_name}}/work state=absent
+      - name : copy  war package  file {{path}} to {{host}}
+        copy : src={{package}} dest={{path}}
+      - service : name=tomcat state=started
